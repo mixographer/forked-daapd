@@ -2903,6 +2903,20 @@ packets_send(struct raop_master_session *rms)
   return 0;
 }
 
+static void timespec_diff(struct timespec *start, struct timespec *stop,
+                   struct timespec *result)
+{
+    if ((stop->tv_nsec - start->tv_nsec) < 0) {
+        result->tv_sec = stop->tv_sec - start->tv_sec - 1;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+    } else {
+        result->tv_sec = stop->tv_sec - start->tv_sec;
+        result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+    }
+
+    return;
+}
+
 static void
 packets_sync_send(struct raop_master_session *rms, struct timespec pts)
 {
@@ -2922,10 +2936,15 @@ packets_sync_send(struct raop_master_session *rms, struct timespec pts)
   // we want to tell the device what it should be playing right now. So we give
   // it a cur_time where we subtract this duration.
 // TODO update comment to match reality
-  cur_stamp.ts.tv_sec = pts.tv_sec;
-  cur_stamp.ts.tv_nsec = pts.tv_nsec;
+  cur_stamp.ts = pts;
 
   clock_gettime(CLOCK_MONOTONIC, &ts);
+
+  struct timespec ts_diff;
+  timespec_diff(&pts, &ts, &ts_diff);
+  if (ts_diff.tv_sec > 0)
+    DPRINTF(E_WARN, L_PLAYER, "Warning, diff is high: diff=%lu:%lu, cur_ts=%lu:%lu, now=%lu:%lu\n",
+	    ts_diff.tv_sec, ts_diff.tv_nsec, cur_stamp.ts.tv_sec, cur_stamp.ts.tv_nsec, ts.tv_sec, ts.tv_nsec);
 
   // The cur_pos will be the rtptime of the coming packet, minus
   // OUTPUTS_BUFFER_DURATION in samples (output_buffer_samples). Because we
