@@ -6,6 +6,9 @@
 # mount, please see the README.
 #
 # In all likelihood, that's all you need to do!
+#
+# (modified for mixographer's default config
+#
 
 general {
 	# Username
@@ -19,7 +22,7 @@ general {
 	# Log file and level
 	# Available levels: fatal, log, warning, info, debug, spam
 	logfile = "@localstatedir@/log/@PACKAGE@.log"
-	loglevel = log
+	loglevel = debug
 
 	# Admin password for the web interface
 	# Note that access to the web interface from computers in
@@ -36,14 +39,14 @@ general {
 #	trusted_networks = { "localhost", "192.168", "fd" }
 
 	# Enable/disable IPv6
-	ipv6 = yes
+	ipv6 = no
 
 	# Location of cache database
 #	cache_path = "@localstatedir@/cache/@PACKAGE@/cache.db"
 
 	# DAAP requests that take longer than this threshold (in msec) get their
 	# replies cached for next time. Set to 0 to disable caching.
-#	cache_daap_threshold = 1000
+	cache_daap_threshold = 3000
 
 	# When starting playback, autoselect speaker (if none of the previously
 	# selected speakers/outputs are available)
@@ -68,7 +71,7 @@ library {
 #	password = ""
 
 	# Directories to index
-	directories = { "/srv/music" }
+	directories = { "/srv/music", "/mnt/musicserver/Albums" }
 
 	# Follow symlinks. Default: true.
 #	follow_symlinks = true
@@ -179,7 +182,7 @@ library {
 	# Watch named pipes in the library for data and autostart playback when
 	# there is data to be read. To exclude specific pipes from watching,
 	# consider using the above _ignore options.
-#	pipe_autostart = true
+	pipe_autostart = false
 
 	# Enable automatic rating updates
 	# If enabled, rating is automatically updated after a song has either been
